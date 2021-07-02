@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+<form method="POST"  action={{path ('payment')}} id="payment-form">
+    <div class="container">
+        <div class="row">
+            <div class="input-field col s12 ">
+                <h4 class="card-title teal-text center">Paypal</h4>
+                <input type="hidden" name="price" id="price"value="{{price}}">
+                <input type="hidden" name="idOrder" value="{{idOrder}}">
+                <div id="paypal-button-container"></div>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+
+{% endblock %}
+  {% block javascripts %}
+          <script src="https://www.paypal.com/sdk/js?client-id=AZG8SSRJ-m_J5yuN11dlkG5mwd51BngNQzxKzJp4KrS4SovtQl2q5ps__LA7q452lHsOtVHhY8uitBfi&currency=EUR"> // Replace YOUR_CLIENT_ID with your sandbox client ID
+        </script>
+        <!-- Add the checkout buttons, set up the order and approve the order -->
+        <script>
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+            let montant = document.querySelector("#price").value
+            console.log(montant)
+                return actions.order.create({
+                    purchase_units: [{
+                    amount: {
+                        value: montant
+                    }
+                    }]
+                });
+                },
+                onApprove: function(data, actions) {
+                    console.log("action" , actions)
+                return actions.order.capture().then(function(details) {
+                  //  alert('Transaction completed by ' + details.payer.name.given_name);
+                    document.querySelector('#payment-form').submit()
+                });
+                }
+            }).render('#paypal-button-container'); // Display payment options on your web page
+        </script>
+    {% endblock %}
